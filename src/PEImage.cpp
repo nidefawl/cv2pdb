@@ -134,7 +134,7 @@ bool PEImage::save(const TCHAR* oname)
 }
 
 ///////////////////////////////////////////////////////////////////////
-bool PEImage::replaceDebugSection (const void* data, int datalen, bool initCV)
+bool PEImage::writeDebugSection (const void* data, int datalen, bool initCV, bool replaceDwarfSection)
 {
 	// append new debug directory to data
 	IMAGE_DEBUG_DIRECTORY debugdir;
@@ -150,42 +150,48 @@ bool PEImage::replaceDebugSection (const void* data, int datalen, bool initCV)
 	datalen = (datalen + 0xf) & ~0xf;
 	int xdatalen = datalen + sizeof(debugdir);
 
-	// assume there is place for another section because of section alignment
-	int s;
-	DWORD lastVirtualAddress = 0;
-    int firstDWARFsection = -1;
 	int cntSections = countSections();
-	for(s = 0; s < cntSections; s++)
-	{
-		const char* name = (const char*) sec[s].Name;
-		if(name[0] == '/')
+	DWORD lastVirtualAddress = 0;
+	int s;
+	if (replaceDwarfSection) {
+		// assume there is place for another section because of section alignment
+		int firstDWARFsection = -1;
+		for(s = 0; s < cntSections; s++)
 		{
-			int off = strtol(name + 1, 0, 10);
-			name = strtable + off;
-		}
-		if (strncmp (name, ".debug_", 7) != 0)
-			firstDWARFsection = -1;
-		else if (firstDWARFsection < 0)
-			firstDWARFsection = s;
-
-		if (strcmp (name, ".debug") == 0)
-		{
-			if (s == cntSections - 1)
+			const char* name = (const char*) sec[s].Name;
+			if(name[0] == '/')
 			{
-				dump_total_len = sec[s].PointerToRawData;
-				break;
+				int off = strtol(name + 1, 0, 10);
+				name = strtable + off;
 			}
-			strcpy ((char*) sec [s].Name, ".ddebug");
-			printf("warning: .debug not last section, cannot remove section\n");
+			if (strncmp (name, ".debug_", 7) != 0)
+				firstDWARFsection = -1;
+			else if (firstDWARFsection < 0)
+				firstDWARFsection = s;
+			if (strcmp (name, ".debug") == 0)
+			{
+				if (s == cntSections - 1)
+				{
+					dump_total_len = sec[s].PointerToRawData;
+					break;
+				}
+				strcpy ((char*) sec [s].Name, ".ddebug");
+				printf("warning: .debug not last section, cannot remove section\n");
+			}
+			lastVirtualAddress = sec[s].VirtualAddress + sec[s].Misc.VirtualSize;
 		}
-		lastVirtualAddress = sec[s].VirtualAddress + sec[s].Misc.VirtualSize;
+		if (firstDWARFsection > 0)
+		{
+			s = firstDWARFsection;
+			dump_total_len = sec[s].PointerToRawData;
+			lastVirtualAddress = sec[s-1].VirtualAddress + sec[s-1].Misc.VirtualSize;
+		}
 	}
-    if (firstDWARFsection > 0)
-    {
-        s = firstDWARFsection;
-		dump_total_len = sec[s].PointerToRawData;
-		lastVirtualAddress = sec[s-1].VirtualAddress + sec[s-1].Misc.VirtualSize;
-    }
+	else {
+		lastVirtualAddress = sec[cntSections - 1].VirtualAddress + sec[cntSections - 1].Misc.VirtualSize;
+		// assuming there is enough free bytes left in the section header table for additional entry
+		s = countSections();
+	}
 	int align = IMGHDR(OptionalHeader.FileAlignment);
 	int align_len = xdatalen;
 	int fill = 0;

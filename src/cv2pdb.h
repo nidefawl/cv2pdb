@@ -169,7 +169,7 @@ public:
 	bool addDWARFTypes();
 	bool addDWARFLines();
 	bool addDWARFPublics();
-	bool writeDWARFImage(const TCHAR* opath);
+	bool writeDWARFImage(const TCHAR* opath, bool replaceDwarfDbgSec);
 
 	bool addDWARFSectionContrib(mspdb::Mod* mod, unsigned long pclo, unsigned long pchi);
 	bool addDWARFProc(DWARF_InfoData& id, DWARF_CompilationUnit* cu, DIECursor cursor);

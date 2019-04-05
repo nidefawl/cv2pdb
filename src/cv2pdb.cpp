@@ -3441,7 +3441,7 @@ bool CV2PDB::addSymbols()
 
 bool CV2PDB::writeImage(const TCHAR* opath, PEImage& exeImage)
 {
-	if (!exeImage.replaceDebugSection(rsds, rsdsLen, true))
+	if (!exeImage.writeDebugSection(rsds, rsdsLen, true, true))
 		return setError(exeImage.getLastError());
 
 	if (!exeImage.save(opath))

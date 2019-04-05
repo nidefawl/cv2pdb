@@ -1733,10 +1733,10 @@ bool CV2PDB::addDWARFPublics()
 	return true;
 }
 
-bool CV2PDB::writeDWARFImage(const TCHAR* opath)
+bool CV2PDB::writeDWARFImage(const TCHAR* opath, bool replaceDwarfDbgSec)
 {
 	int len = sizeof(*rsds) + strlen((char*)(rsds + 1)) + 1;
-	if (!img.replaceDebugSection(rsds, len, false))
+	if (!img.writeDebugSection(rsds, len, false, replaceDwarfDbgSec))
 		return setError(img.getLastError());
 
 	if (!img.save(opath))

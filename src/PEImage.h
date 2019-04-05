@@ -61,7 +61,7 @@ public:
 	bool loadObj(const TCHAR* iname);
 	bool save(const TCHAR* oname);
 
-	bool replaceDebugSection (const void* data, int datalen, bool initCV);
+	bool writeDebugSection (const void* data, int datalen, bool initCV, bool replaceDwarfSection);
 	bool initCVPtr(bool initDbgDir);
 	bool initDbgPtr(bool initDbgDir);
 	bool initDWARFPtr(bool initDbgDir);

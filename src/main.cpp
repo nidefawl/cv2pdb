@@ -121,6 +121,7 @@ int T_main(int argc, TCHAR* argv[])
 	double Dversion = 2.072;
 	const TCHAR* pdbref = 0;
 	bool debug = false;
+	bool replaceDwarfDebugSection = false;
 
 	CoInitialize(nullptr);
 
@@ -136,6 +137,8 @@ int T_main(int argc, TCHAR* argv[])
 			Dversion = 0;
 		else if (argv[0][1] == 'n')
 			demangleSymbols = false;
+		else if (argv[0][1] == 'r')
+			replaceDwarfDebugSection = true;
 		else if (argv[0][1] == 'e')
 			useTypedefEnum = true;
 		else if (argv[0][1] == 'd' && argv[0][2] == 'e' && argv[0][3] == 'b') // deb[ug]
@@ -156,7 +159,7 @@ int T_main(int argc, TCHAR* argv[])
 		printf("License for redistribution is given by the Artistic License 2.0\n");
 		printf("see file LICENSE for further details\n");
 		printf("\n");
-		printf("usage: " SARG " [-D<version>|-C|-n|-e|-s<C>|-p<embedded-pdb>] <exe-file> [new-exe-file] [pdb-file]\n", argv[0]);
+		printf("usage: " SARG " [-D<version>|-C|-n|-e|-s<C>|-r|-p<embedded-pdb>] <exe-file> [new-exe-file] [pdb-file]\n", argv[0]);
 		return -1;
 	}
 
@@ -227,7 +230,7 @@ int T_main(int argc, TCHAR* argv[])
 		if (!cv2pdb.addDWARFPublics())
 			fatal(SARG ": %s", pdbname, cv2pdb.getLastError());
 
-		if (!cv2pdb.writeDWARFImage(outname))
+		if (!cv2pdb.writeDWARFImage(outname, replaceDwarfDebugSection))
 			fatal(SARG ": %s", outname, cv2pdb.getLastError());
 	}
 	else
