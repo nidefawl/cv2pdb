@@ -121,7 +121,7 @@ int T_main(int argc, TCHAR* argv[])
 	double Dversion = 2.072;
 	const TCHAR* pdbref = 0;
 	bool debug = false;
-	bool replaceDwarfDebugSection = false;
+	bool replaceDwarfDebugSection = true;
 
 	CoInitialize(nullptr);
 
@@ -137,7 +137,7 @@ int T_main(int argc, TCHAR* argv[])
 			Dversion = 0;
 		else if (argv[0][1] == 'n')
 			demangleSymbols = false;
-		else if (argv[0][1] == 'r')
+		else if (argv[0][1] == 'k')
 			replaceDwarfDebugSection = true;
 		else if (argv[0][1] == 'e')
 			useTypedefEnum = true;
@@ -159,7 +159,7 @@ int T_main(int argc, TCHAR* argv[])
 		printf("License for redistribution is given by the Artistic License 2.0\n");
 		printf("see file LICENSE for further details\n");
 		printf("\n");
-		printf("usage: " SARG " [-D<version>|-C|-n|-e|-s<C>|-r|-p<embedded-pdb>] <exe-file> [new-exe-file] [pdb-file]\n", argv[0]);
+		printf("usage: " SARG " [-D<version>|-C|-n|-e|-s<C>|-k|-p<embedded-pdb>] <exe-file> [new-exe-file] [pdb-file]\n", argv[0]);
 		return -1;
 	}
 
