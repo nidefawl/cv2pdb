@@ -138,7 +138,7 @@ int T_main(int argc, TCHAR* argv[])
 		else if (argv[0][1] == 'n')
 			demangleSymbols = false;
 		else if (argv[0][1] == 'k')
-			replaceDwarfDebugSection = true;
+			replaceDwarfDebugSection = false;
 		else if (argv[0][1] == 'e')
 			useTypedefEnum = true;
 		else if (argv[0][1] == 'd' && argv[0][2] == 'e' && argv[0][3] == 'b') // deb[ug]
